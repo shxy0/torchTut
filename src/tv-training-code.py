@@ -11,7 +11,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
 import sys
-sys.path.append('../references/detection')
+sys.path.append('../references030/detection')
 
 from engine import train_one_epoch, evaluate
 
@@ -120,8 +120,8 @@ def main():
     # our dataset has two classes only - background and person
     num_classes = 2
     # use our dataset and defined transformations
-    dataset      = PennFudanDataset('../data/PennFudanPed', get_transform(train=True))
-    dataset_test = PennFudanDataset('../data/PennFudanPed', get_transform(train=False))
+    dataset      = PennFudanDataset('../../data/PennFudanPed', get_transform(train=True))
+    dataset_test = PennFudanDataset('../../data/PennFudanPed', get_transform(train=False))
 
     # split the dataset in train and test set
     indices = torch.randperm(len(dataset)).tolist()

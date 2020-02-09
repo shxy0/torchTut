@@ -109,7 +109,10 @@ class CocoEvaluator(object):
             labels = prediction["labels"].tolist()
 
             rles = [
-                mask_util.encode(np.array(mask[0, :, :, np.newaxis], order="F"))[0]
+                # mask_util.encode(np.array(mask[0, :, :, np.newaxis], order="F"))[0]
+                # 2020/02/09
+                # TypeError: object of type <class 'numpy.float64'> cannot be safely interpreted as an integer.
+                mask_util.encode(np.array(mask[0, :, :, np.newaxis], order="F", dtype=np.uint8))[0]
                 for mask in masks
             ]
             for rle in rles:
