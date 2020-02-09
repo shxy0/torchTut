@@ -8,10 +8,10 @@ from PIL import Image
 
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+from torchvision.models.detection.mask_rcnn   import MaskRCNNPredictor
 
 import sys
-sys.path.append('../references030/detection')
+sys.path.append('../references040/detection')
 
 from engine import train_one_epoch, evaluate
 
@@ -25,12 +25,12 @@ class PennFudanDataset(object):
         self.transforms = transforms
         # load all image files, sorting them to
         # ensure that they are aligned
-        self.imgs = list(sorted(os.listdir(os.path.join(root, "PNGImages"))))
+        self.imgs  = list(sorted(os.listdir(os.path.join(root, "PNGImages"))))
         self.masks = list(sorted(os.listdir(os.path.join(root, "PedMasks"))))
 
     def __getitem__(self, idx):
         # load images ad masks
-        img_path = os.path.join(self.root, "PNGImages", self.imgs[idx])
+        img_path  = os.path.join(self.root, "PNGImages", self.imgs[idx])
         mask_path = os.path.join(self.root, "PedMasks", self.masks[idx])
         img = Image.open(img_path).convert("RGB")
         # note that we haven't converted the mask to RGB,
@@ -60,12 +60,14 @@ class PennFudanDataset(object):
             boxes.append([xmin, ymin, xmax, ymax])
 
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
+        
         # there is only one class
         labels = torch.ones((num_objs,), dtype=torch.int64)
-        masks = torch.as_tensor(masks, dtype=torch.uint8)
+        masks  = torch.as_tensor(masks, dtype=torch.uint8)
 
         image_id = torch.tensor([idx])
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+        
         # suppose all instances are not crowd
         iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
 
@@ -132,16 +134,14 @@ def main():
     data_loader = torch.utils.data.DataLoader(
         dataset, shuffle=True, 
         # batch_size=2, 
-        batch_size=1, 
+        batch_size=1, # CUDA out of memory
         num_workers=4,
-        # num_workers=2,
         collate_fn=utils.collate_fn)
 
     data_loader_test = torch.utils.data.DataLoader(
         dataset_test, shuffle=False, 
         batch_size=1, 
         num_workers=4,
-        # num_workers=2,
         collate_fn=utils.collate_fn)
 
     # get the model using our helper function
